@@ -1,0 +1,16 @@
+{
+  "name": "Acoperișuri Perfecte",
+  "short_name": "Acop. Perfecte",
+  "description": "Montaj, reparații și înlocuire de acoperișuri în Suceava și nordul Moldovei.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#14171b",
+  "theme_color": "#14171b",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
