@@ -32,6 +32,7 @@
     mobileNav.classList.remove("is-open");
     navToggle.classList.remove("is-open");
     navToggle.setAttribute("aria-expanded", "false");
+    header.classList.remove("menu-open");
     unlockBody();
   }
 
@@ -39,6 +40,7 @@
     const isOpen = mobileNav.classList.toggle("is-open");
     navToggle.classList.toggle("is-open", isOpen);
     navToggle.setAttribute("aria-expanded", String(isOpen));
+    header.classList.toggle("menu-open", isOpen);
     if (isOpen) { lockBody(); } else { unlockBody(); }
   });
 
