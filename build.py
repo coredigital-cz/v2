@@ -4,9 +4,16 @@
 Generator static — Acoperișuri Perfecte / acoperisulsolid.ro
 Rulează:  python3 build.py
 """
-import os, json
+import os, json, hashlib
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+
+def _ver(rel):
+    with open(os.path.join(ROOT, rel), "rb") as f:
+        return hashlib.md5(f.read()).hexdigest()[:8]
+
+CSS_V = _ver("assets/style.css")
+JS_V  = _ver("assets/script.js")
 
 B = {
     "name":     "Acoperișuri Perfecte",
@@ -16,7 +23,7 @@ B = {
     "tel_raw":  "+40756419558",
     "wa":       "40756419558",
     "rating":   "4,8",
-    "reviews":  200,
+    "reviews":  54,
     "years":    10,
     "projects": 500,
 }
@@ -87,12 +94,12 @@ WORKS = [
 ]
 
 REVIEWS = [
-    ("Constantin B.", "Casă nouă",   "Au venit când au spus și au închis acoperișul în cinci zile. Prețul din ofertă a fost prețul final, fără discuții pe parcurs."),
-    ("Elena R.",      "Înlocuire",   "Aveam tablă veche care ruginise. Au pus țiglă metalică și au refăcut și jgheaburile. Curtea a rămas curată după ei."),
-    ("Marius D.",     "Infiltrație", "De doi ani aveam o pată pe tavan și nimeni nu găsea cauza. Au urcat, au urmărit apa și au reparat șorțul de la coș."),
-    ("Ioana P.",      "Mansardare",  "Mansarda nu mai are condens iarna. Ne-au explicat exact de ce trebuia bariera de vapori pusă altfel decât era."),
-    ("Vasile M.",     "Reparație",   "Furtuna îmi luase câteva plăci. Au venit în două zile și au rezolvat, fără să-mi ceară să schimb tot acoperișul."),
-    ("Andrei T.",     "Șarpantă",    "Șarpanta era atacată pe o parte. Au schimbat doar ce trebuia schimbat, nu tot, și mi-au arătat fiecare element."),
+    ("Constantin B.", "jud. Iași",       "acoperis-casa-noua-antracit.jpg",       "Au venit când au spus și au închis acoperișul în cinci zile. Prețul din ofertă a fost prețul final, fără discuții pe parcurs."),
+    ("Elena R.",      "jud. Cluj",       "acoperis-tigla-metalica-antracit.jpg",  "Aveam tablă veche care ruginise. Au pus țiglă metalică și au refăcut și jgheaburile. Curtea a rămas curată după ei."),
+    ("Marius D.",     "jud. Timiș",      "acoperis-finalizat-casa-parter.jpg",    "De doi ani aveam o pată pe tavan și nimeni nu găsea cauza. Au urcat, au urmărit apa și au reparat șorțul de la coș."),
+    ("Ioana P.",      "jud. Suceava",    "montaj-fereastra-mansarda.jpg",         "Mansarda nu mai are condens iarna. Ne-au explicat exact de ce trebuia bariera de vapori pusă altfel decât era."),
+    ("Vasile M.",     "jud. Brașov",     "acoperis-tigla-metalica-rosie.jpg",     "Furtuna îmi luase câteva plăci. Au venit în două zile și au rezolvat, fără să-mi ceară să schimb tot acoperișul."),
+    ("Andrei T.",     "jud. Constanța",  "sarpanta-lemn-casa-noua.jpg",           "Șarpanta era atacată pe o parte. Au schimbat doar ce trebuia schimbat, nu tot, și mi-au arătat fiecare element."),
 ]
 
 FAQ = [
@@ -218,11 +225,11 @@ def head(title, desc, path, og="acoperis-tigla-metalica-antracit.jpg", label="",
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/style.css?v=%s">
 %s
 </head>
 <body>""" % (title, desc, url, robots, B["name"], B["name"], title, desc, url, B["domain"], og,
-             title, desc, B["domain"], og, blocks)
+             title, desc, B["domain"], og, CSS_V, blocks)
 
 
 def header(active=""):
@@ -326,11 +333,11 @@ def footer():
 </div>
 <a class="wa-f" href="%s" target="_blank" rel="noopener" aria-label="Scrieți-ne pe WhatsApp">%s</a>
 
-<script src="/assets/script.js" defer></script>
+<script src="/assets/script.js?v=%s" defer></script>
 </body>
 </html>""" % (LOGO, B["name"], B["tagline"], B["years"], B["projects"], TEL, B["tel_disp"], svc,
               TEL, B["tel_disp"], WA_LINK, B["name"], B["rating"], B["reviews"],
-              TEL, WA_LINK, WA_LINK, WA_SVG)
+              TEL, WA_LINK, WA_LINK, WA_SVG, JS_V)
 
 
 def phero(crumb, h1, lead):
@@ -344,10 +351,12 @@ def stars():
     return '<span class="stars" aria-label="5 din 5 stele">★★★★★</span>'
 
 
-def rev_card(name, kind, text):
-    return """<article class="rev-c">%s<p>%s</p>
+def rev_card(name, judet, photo, text):
+    return """<article class="rev-c">
+  <div class="rev-ph"><img src="/images/%s" alt="Lucrare la un client din %s" loading="lazy" width="400" height="260"></div>
+  %s<p>%s</p>
   <div class="rev-who"><span class="rev-av" aria-hidden="true">%s</span>
-    <span><b>%s</b><span>%s</span></span></div></article>""" % (stars(), text, name[0], name, kind)
+    <span><b>%s</b><span>%s</span></span></div></article>""" % (photo, judet, stars(), text, name[0], name, judet)
 
 
 def faq_block(items):
