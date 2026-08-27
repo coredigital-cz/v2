@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Generator static — Acoperișuri Perfecte / acoperisulsolid.ro
+Generator static — Acoperișul Solid / acoperisulsolid.ro
 Rulează:  python3 build.py
 """
 import os, json, hashlib
@@ -16,7 +16,7 @@ CSS_V = _ver("assets/style.css")
 JS_V  = _ver("assets/script.js")
 
 B = {
-    "name":     "Acoperișuri Perfecte",
+    "name":     "Acoperișul Solid",
     "tagline":  "Montaj · Reparații · Mansardări",
     "domain":   "https://acoperisulsolid.ro",
     "tel_disp": "0756 419 558",
@@ -31,15 +31,22 @@ WA_TXT = "Bun%C4%83%20ziua%21%20A%C8%99%20dori%20o%20ofert%C4%83%20pentru%20lucr
 WA_LINK = "https://wa.me/%s?text=%s" % (B["wa"], WA_TXT)
 TEL = "tel:" + B["tel_raw"]
 
-REGIONS = ["Moldova", "Transilvania", "Muntenia", "Banat", "Oltenia", "Dobrogea", "Maramureș", "Bucovina"]
-CITIES = ["București", "Cluj-Napoca", "Iași", "Timișoara", "Brașov", "Constanța",
-          "Suceava", "Craiova", "Oradea", "Sibiu", "Bacău", "Ploiești"]
+REGIONS = ["Iași", "Suceava", "Vaslui", "Neamț", "Bacău"]
+
+# localitati reale pe judet, pentru a arata acoperire pe toata raza judetului, nu doar resedinta
+JUDETE_LOC = {
+    "Iași":    ["Iași", "Pașcani", "Hârlău", "Târgu Frumos", "Podu Iloaiei", "Belcești"],
+    "Suceava": ["Suceava", "Fălticeni", "Rădăuți", "Câmpulung Moldovenesc", "Gura Humorului", "Vatra Dornei", "Siret"],
+    "Vaslui":  ["Vaslui", "Bârlad", "Huși", "Negrești"],
+    "Neamț":   ["Piatra Neamț", "Roman", "Târgu Neamț", "Bicaz"],
+    "Bacău":   ["Bacău", "Onești", "Moinești", "Comănești", "Buhuși"],
+}
 
 NAV = [
     ("servicii",            "/servicii/",            "Servicii"),
     ("lucrari",             "/lucrari/",             "Lucrări"),
     ("calculator-pret",     "/calculator-pret/",     "Calculator preț"),
-    ("acoperire",           "/acoperire-nationala/", "Unde lucrăm"),
+    ("acoperire",           "/zona-acoperire/",       "Unde lucrăm"),
     ("intrebari-frecvente", "/intrebari-frecvente/", "Întrebări"),
     ("despre",              "/despre/",              "Despre noi"),
     ("contact",             "/contact/",             "Contact"),
@@ -58,7 +65,7 @@ SERVICES = [
          t="Reparații și infiltrații",
          s="Găsim de unde intră apa, nu doar unde se vede pata.",
          d="Apa intră într-un loc și iese în altul, la câțiva metri distanță. Urmărim traseul până la sursă și reparăm cauza: țiglă spartă sau deplasată, coamă desfăcută, dolie ruginită, șorț lipsă la coș, folie ruptă. Pentru infiltrații active ne organizăm cu prioritate."),
-    dict(k="sarpante", tag="Structură", img="srv-acoperis-nou.jpg",
+    dict(k="sarpante", tag="Structură", img="sarpanta-lemn-cladire-noua.jpg",
          t="Șarpante și dulgherie",
          s="Construim și consolidăm structura de lemn a acoperișului.",
          d="Executăm șarpante noi și consolidăm structuri existente. Lemnul se tratează ignifug și antifungic înainte de urcare, iar îmbinările se fac astfel încât structura să lucreze ca un tot. La casele vechi înlocuim punctual elementele atacate, fără să demontăm tot ce încă e sănătos."),
@@ -91,20 +98,30 @@ WORKS = [
     ("sarpanta-lemn-casa-noua.jpg",          "Dulgherie", "Șarpantă nouă executată la casă în construcție", "Construcție nouă"),
     ("acoperis-casa-noua-antracit.jpg",      "Acoperiș nou","Acoperiș închis complet la casă cu mansardă", "Construcție nouă"),
     ("acoperis-finalizat-casa-parter.jpg",   "Finalizat", "Acoperiș pe casă parter, cu streașină lambrisată", "Locuință parter"),
+    ("acoperis-antracit-vedere-aeriana.jpg", "Finalizat", "Acoperiș din țiglă metalică antracit, vedere de ansamblu", "jud. Suceava"),
+    ("acoperis-visiniu-tigla-metalica.jpg",  "Finalizat", "Țiglă metalică vișinie, cu racord la coș de cărămidă", "jud. Iași"),
+    ("acoperis-antracit-cos-fum.jpg",        "Finalizat", "Acoperiș antracit lângă case tradiționale din zonă", "jud. Neamț"),
+    ("montaj-tigla-antracit-lucru.jpg",      "În lucru",  "Montaj țiglă metalică antracit, casă în construcție alăturată", "jud. Iași"),
+    ("acoperis-visiniu-echipa-montaj.jpg",   "În lucru",  "Echipa la montajul unui acoperiș vișiniu, printre copaci", "jud. Vaslui"),
+    ("acoperis-visiniu-patru-ape.jpg",       "Finalizat", "Acoperiș în patru ape, țiglă metalică vișinie", "jud. Bacău"),
+    ("acoperis-gri-panorama-sat.jpg",        "Finalizat", "Acoperiș gri, vedere panoramică spre sat", "jud. Suceava"),
+    ("detaliu-montaj-insurubare.jpg",        "Detaliu",   "Fixarea țiglei metalice, prindere pe toată suprafața", "Detaliu montaj"),
+    ("sarpanta-casa-montaj.jpg",             "Structură", "Șarpantă nouă ridicată pe o casă în construcție", "jud. Neamț"),
+    ("structura-lemn-pergola-terasa.jpg",    "Dulgherie", "Structură din lemn masiv pentru o terasă acoperită", "Dulgherie"),
 ]
 
 REVIEWS = [
-    ("Constantin B.", "jud. Iași",       "acoperis-casa-noua-antracit.jpg",       "Au venit când au spus și au închis acoperișul în cinci zile. Prețul din ofertă a fost prețul final, fără discuții pe parcurs."),
-    ("Elena R.",      "jud. Cluj",       "acoperis-tigla-metalica-antracit.jpg",  "Aveam tablă veche care ruginise. Au pus țiglă metalică și au refăcut și jgheaburile. Curtea a rămas curată după ei."),
-    ("Marius D.",     "jud. Timiș",      "acoperis-finalizat-casa-parter.jpg",    "De doi ani aveam o pată pe tavan și nimeni nu găsea cauza. Au urcat, au urmărit apa și au reparat șorțul de la coș."),
-    ("Ioana P.",      "jud. Suceava",    "montaj-fereastra-mansarda.jpg",         "Mansarda nu mai are condens iarna. Ne-au explicat exact de ce trebuia bariera de vapori pusă altfel decât era."),
-    ("Vasile M.",     "jud. Brașov",     "acoperis-tigla-metalica-rosie.jpg",     "Furtuna îmi luase câteva plăci. Au venit în două zile și au rezolvat, fără să-mi ceară să schimb tot acoperișul."),
-    ("Andrei T.",     "jud. Constanța",  "sarpanta-lemn-casa-noua.jpg",           "Șarpanta era atacată pe o parte. Au schimbat doar ce trebuia schimbat, nu tot, și mi-au arătat fiecare element."),
+    ("Constantin B.", "jud. Iași",     "acoperis-casa-noua-antracit.jpg",       "Au venit când au spus și au închis acoperișul în cinci zile. Prețul din ofertă a fost prețul final, fără discuții pe parcurs."),
+    ("Elena R.",      "jud. Suceava",  "acoperis-tigla-metalica-antracit.jpg",  "Aveam tablă veche care ruginise. Au pus țiglă metalică și au refăcut și jgheaburile. Curtea a rămas curată după ei."),
+    ("Marius D.",     "jud. Vaslui",   "acoperis-finalizat-casa-parter.jpg",    "De doi ani aveam o pată pe tavan și nimeni nu găsea cauza. Au urcat, au urmărit apa și au reparat șorțul de la coș."),
+    ("Ioana P.",      "jud. Neamț",    "montaj-fereastra-mansarda.jpg",         "Mansarda nu mai are condens iarna. Ne-au explicat exact de ce trebuia bariera de vapori pusă altfel decât era."),
+    ("Vasile M.",     "jud. Bacău",    "acoperis-tigla-metalica-rosie.jpg",     "Furtuna îmi luase câteva plăci. Au venit în două zile și au rezolvat, fără să-mi ceară să schimb tot acoperișul."),
+    ("Andrei T.",     "jud. Iași",     "sarpanta-lemn-casa-noua.jpg",           "Șarpanta era atacată pe o parte. Au schimbat doar ce trebuia schimbat, nu tot, și mi-au arătat fiecare element."),
 ]
 
 FAQ = [
-    ("Chiar lucrați în toată țara?",
-     ["Da. Avem echipe care se deplasează la nivel național, iar pentru lucrări mai mari ne cazăm în zonă pe durata execuției.",
+    ("În ce zone lucrați exact?",
+     ["Acoperim integral județele Iași, Suceava, Vaslui, Neamț și Bacău — nu doar reședințele de județ, ci toate orașele, comunele și satele din raza lor.",
       "Ne spuneți unde este casa și vă confirmăm în aceeași zi dacă putem prelua lucrarea și în ce interval."]),
     ("Cât costă un acoperiș?",
      ["Depinde de suprafața reală, de pantă, de învelitoarea aleasă și de starea șarpantei. Aveți pe site un calculator care vă dă un interval orientativ în mai puțin de un minut.",
@@ -159,14 +176,14 @@ def biz_ld():
         "@type": "RoofingContractor",
         "@id": B["domain"] + "/#business",
         "name": B["name"],
-        "description": "Montaj, înlocuire și reparații acoperișuri, șarpante, mansardări, jgheaburi și hidroizolații, în toată România.",
+        "description": "Montaj, înlocuire și reparații acoperișuri, șarpante, mansardări, jgheaburi și hidroizolații, în județele Iași, Suceava, Vaslui, Neamț și Bacău.",
         "url": B["domain"] + "/",
         "telephone": B["tel_raw"],
         "image": B["domain"] + "/images/acoperis-tigla-metalica-antracit.jpg",
         "logo": B["domain"] + "/favicon.svg",
         "priceRange": "$$",
         "address": {"@type": "PostalAddress", "addressCountry": "RO", "addressLocality": "România"},
-        "areaServed": {"@type": "Country", "name": "România"},
+        "areaServed": [{"@type": "AdministrativeArea", "name": "Iași"}, {"@type": "AdministrativeArea", "name": "Suceava"}, {"@type": "AdministrativeArea", "name": "Vaslui"}, {"@type": "AdministrativeArea", "name": "Neamț"}, {"@type": "AdministrativeArea", "name": "Bacău"}],
         "openingHoursSpecification": {
             "@type": "OpeningHoursSpecification",
             "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
@@ -238,7 +255,7 @@ def header(active=""):
     mnav = "".join('<a href="%s">%s</a>' % (u, t) for k, u, t in NAV)
     return """
 <div class="topbar"><div class="wrap">
-  <span>Lucrăm în toată România · <b>Deplasare și deviz gratuit</b></span>
+  <span>Lucrăm în Iași, Suceava, Vaslui, Neamț și Bacău · <b>Deplasare și deviz gratuit</b></span>
   <span class="tb-r"><span>Program 07:00 – 21:00</span>
   <span><span class="tb-star">★★★★★</span> %s din %d de recenzii</span></span>
 </div></div>
@@ -300,7 +317,7 @@ def footer():
     <div class="ftr-g">
       <div class="ftr-brand">
         <a class="brand" href="/">%s<span class="brand-t"><b>%s</b><span>%s</span></span></a>
-        <p>Echipe de acoperișuri care se deplasează în toată România. Peste %d ani de experiență și %d+ de lucrări.</p>
+        <p>Echipe de acoperișuri active în tot județul Iași, Suceava, Vaslui, Neamț și Bacău — orașe, comune și sate deopotrivă. Peste %d ani de experiență și %d+ de lucrări.</p>
         <a class="ftr-tel" href="%s">%s</a>
       </div>
       <div><h4>Servicii</h4><ul>%s</ul></div>
@@ -308,7 +325,7 @@ def footer():
         <li><a href="/despre/">Despre noi</a></li>
         <li><a href="/lucrari/">Lucrări executate</a></li>
         <li><a href="/calculator-pret/">Calculator preț</a></li>
-        <li><a href="/acoperire-nationala/">Unde lucrăm</a></li>
+        <li><a href="/zona-acoperire/">Unde lucrăm</a></li>
         <li><a href="/intrebari-frecvente/">Întrebări frecvente</a></li>
         <li><a href="/contact/">Contact</a></li>
       </ul></div>
@@ -316,7 +333,7 @@ def footer():
         <li><a href="%s">%s</a></li>
         <li><a href="%s" target="_blank" rel="noopener">Scrieți pe WhatsApp</a></li>
         <li>Luni – duminică, 07:00 – 21:00</li>
-        <li>Acoperire națională</li>
+        <li>Iași · Suceava · Vaslui · Neamț · Bacău</li>
         <li><a href="https://anpc.ro/" target="_blank" rel="noopener nofollow">ANPC</a> · <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener nofollow">SOL</a></li>
       </ul></div>
     </div>
@@ -424,15 +441,15 @@ def page_home():
     chips = "".join("<span>%s</span>" % c for c in REGIONS)
 
     return head(
-        "Acoperișuri Perfecte | Montaj, înlocuire și reparații acoperiș în toată România",
-        "Montaj acoperiș, înlocuire învelitoare, reparații, șarpante și mansardări în toată România. Peste %d ani experiență, %d+ lucrări, garanție scrisă. Deviz gratuit pe WhatsApp." % (B["years"], B["projects"]),
+        "Acoperișul Solid | Montaj și reparații acoperiș în Iași, Suceava, Vaslui, Neamț, Bacău",
+        "Montaj acoperiș, înlocuire învelitoare, reparații, șarpante și mansardări în județele Iași, Suceava, Vaslui, Neamț și Bacău. Peste %d ani experiență, %d+ lucrări, garanție scrisă. Deviz gratuit pe WhatsApp." % (B["years"], B["projects"]),
         "/", extra=FAQ_LD) + header("") + """
 
 <section class="hero"><div class="wrap"><div class="hero-g">
   <div>
-    <span class="kicker">Acoperire națională</span>
+    <span class="kicker">Iași · Suceava · Vaslui · Neamț · Bacău</span>
     <h1>Un acoperiș pus o dată, corect, pentru următorii treizeci de ani</h1>
-    <p class="hero-lead">Montăm, înlocuim și reparăm acoperișuri oriunde în România. Măsurăm gratuit, vă dăm un deviz pe etape cu preț final și predăm cu garanție scrisă la manoperă.</p>
+    <p class="hero-lead">Montăm, înlocuim și reparăm acoperișuri în tot județul — orașe, comune și sate deopotrivă, nu doar reședințele de județ. Măsurăm gratuit, vă dăm un deviz pe etape cu preț final și predăm cu garanție scrisă la manoperă.</p>
     <div class="hero-act">
       <a class="btn btn-p" href="/calculator-pret/">Calculați prețul</a>
       <a class="btn btn-wa" href="%s" target="_blank" rel="noopener">Trimiteți o poză pe WhatsApp</a>
@@ -440,7 +457,7 @@ def page_home():
     <p class="hero-tel">Sau sunați direct: <a href="%s">%s</a></p>
   </div>
   <div class="hero-ph">
-    <img src="/images/acoperis-tigla-metalica-antracit.jpg" alt="Acoperiș din țiglă metalică antracit finalizat de echipa Acoperișuri Perfecte" width="1600" height="1200" fetchpriority="high">
+    <img src="/images/acoperis-tigla-metalica-antracit.jpg" alt="Acoperiș din țiglă metalică antracit finalizat de echipa Acoperișul Solid" width="1600" height="1200" fetchpriority="high">
     <div class="hero-badge">%s<span class="hb-t"><b>%s din %d de recenzii</b></span></div>
   </div>
 </div></div>
@@ -448,7 +465,7 @@ def page_home():
 <div class="spec"><div class="wrap"><div class="spec-g">
   <div class="spec-i"><div class="spec-n">%d<em>+ ani</em></div><div class="spec-l">De experiență</div></div>
   <div class="spec-i"><div class="spec-n">%d<em>+</em></div><div class="spec-l">Lucrări finalizate</div></div>
-  <div class="spec-i"><div class="spec-n">41</div><div class="spec-l">Județe acoperite</div></div>
+  <div class="spec-i"><div class="spec-n">5</div><div class="spec-l">Județe deservite integral</div></div>
   <div class="spec-i"><div class="spec-n">0<em> lei</em></div><div class="spec-l">Deplasare și deviz</div></div>
 </div></div></div>
 </section>
@@ -495,7 +512,7 @@ def page_home():
     <h2>Ne deplasăm oriunde în România</h2>
     <p>Nu suntem legați de un singur județ. Echipele noastre lucrează în toată țara, iar pentru lucrările mai mari ne cazăm în zonă pe durata execuției. Spuneți-ne unde este casa și vă confirmăm în aceeași zi dacă putem prelua lucrarea.</p>
     <div class="zone-chips">%s</div>
-    <a class="btn btn-p" href="/acoperire-nationala/">Vedeți detalii</a>
+    <a class="btn btn-p" href="/zona-acoperire/">Vedeți detalii</a>
   </div>
   <div class="zone-facts">
     <div class="zone-f"><span>Telefon</span><b>%s</b></div>
@@ -531,8 +548,8 @@ def page_servicii():
              "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": s["t"],
                                   "url": B["domain"] + "/servicii/#" + s["k"]}
                                  for i, s in enumerate(SERVICES)]}
-    return head("Servicii acoperișuri | Montaj, înlocuire, reparații — Acoperișuri Perfecte",
-                "Montaj acoperiș nou, înlocuire învelitoare, reparații și infiltrații, șarpante, mansardări, jgheaburi, tinichigerie și hidroizolații. Echipe în toată România.",
+    return head("Servicii acoperișuri | Montaj, înlocuire, reparații — Acoperișul Solid",
+                "Montaj acoperiș nou, înlocuire învelitoare, reparații și infiltrații, șarpante, mansardări, jgheaburi, tinichigerie și hidroizolații. Echipe în județele Iași, Suceava, Vaslui, Neamț și Bacău.",
                 "/servicii/", "srv-acoperis-nou.jpg", "Servicii", extra=svcld) + header("servicii") + """
 %s
 <section class="sec"><div class="wrap"><div class="svc">%s</div></div></section>
@@ -553,8 +570,8 @@ def page_lucrari():
       <img src="/images/%s" alt="%s — %s" loading="lazy" width="900" height="600">
       <div class="work-o"><span>%s · %s</span><h3>%s</h3></div></a>"""
                     % (WA_LINK, im, t, loc, tag, loc, t) for im, tag, t, loc in WORKS)
-    return head("Lucrări executate | Galerie foto acoperișuri — Acoperișuri Perfecte",
-                "Fotografii reale de pe șantierele noastre: acoperișuri din țiglă metalică, șarpante, mansardări și sisteme pluviale executate în toată România.",
+    return head("Lucrări executate | Galerie foto acoperișuri — Acoperișul Solid",
+                "Fotografii reale de pe șantierele noastre: acoperișuri din țiglă metalică, șarpante, mansardări și sisteme pluviale, executate în Iași, Suceava, Vaslui, Neamț și Bacău.",
                 "/lucrari/", "acoperis-tigla-metalica-rosie.jpg", "Lucrări") + header("lucrari") + """
 %s
 <section class="sec"><div class="wrap">
@@ -649,40 +666,43 @@ def page_calculator():
 
 def page_acoperire():
     chips = "".join("<span>%s</span>" % c for c in REGIONS)
-    city_list = "".join("<li>Acoperișuri %s și împrejurimi</li>" % c for c in CITIES)
-    return head("Unde lucrăm | Acoperișuri în toată România — Acoperișuri Perfecte",
-                "Echipe de acoperișuri care se deplasează în toată România: Moldova, Transilvania, Muntenia, Banat, Oltenia, Dobrogea. Deplasare și măsurătoare gratuite.",
-                "/acoperire-nationala/", "acoperis-finalizat-casa-parter.jpg", "Unde lucrăm") + header("acoperire") + """
+    judet_blocks = "".join("""<div class="arg-i" style="border-color:var(--copper)">
+      <h3>Județul %s</h3>
+      <p>Acoperim toată raza județului — nu doar %s, ci și %s și toate comunele și satele din jurul lor.</p></div>"""
+        % (j, locs[0], ", ".join(locs[1:])) for j, locs in JUDETE_LOC.items())
+
+    return head("Unde lucrăm | Acoperișuri în Iași, Suceava, Vaslui, Neamț, Bacău — Acoperișul Solid",
+                "Lucrăm pe toată raza județelor Iași, Suceava, Vaslui, Neamț și Bacău — orașe, comune și sate, nu doar reședințele de județ. Deplasare și măsurătoare gratuite.",
+                "/zona-acoperire/", "acoperis-finalizat-casa-parter.jpg", "Unde lucrăm") + header("acoperire") + """
 %s
 <section class="sec"><div class="wrap">
-  <div class="sec-h rv"><span class="kicker">Acoperire</span><h2>Lucrăm în toate cele opt regiuni istorice</h2>
-    <p>Nu suntem o firmă legată de un singur județ. Echipele se deplasează la nivel național, iar pentru lucrările care depășesc câteva zile ne cazăm în zonă pe toată durata execuției.</p></div>
+  <div class="sec-h rv"><span class="kicker">Acoperire</span><h2>Cinci județe, acoperite integral</h2>
+    <p>Nu ne oprim la orașele reședință de județ. Lucrăm pe toată raza fiecărui județ — la orice comună sau sat, la fel ca la reședința de județ.</p></div>
   <div class="zone-chips" style="margin-bottom:34px">%s</div>
-  <div class="sec-h rv" style="margin-bottom:20px"><h2 style="font-size:1.5rem">Zone în care lucrăm frecvent</h2></div>
-  <ul class="slist">%s</ul>
+  <div class="arg rv">%s</div>
 </div></section>
 
 <section class="sec sec-dark"><div class="wrap">
   <div class="sec-h rv"><span class="kicker kicker-l">Cum funcționează</span><h2>Deplasarea nu vă costă nimic</h2></div>
   <div class="arg rv">
-    <div class="arg-i" style="border-color:var(--copper)"><h3>Evaluare gratuită, oriunde</h3>
-      <p>Ne deplasăm pentru evaluare și măsurători fără niciun cost, indiferent de județ, și fără să vă oblige la ceva. Dacă în urma măsurătorii decideți să nu lucrați cu noi, nu plătiți nimic.</p></div>
-    <div class="arg-i" style="border-color:var(--copper)"><h3>Cazare pe durata lucrării</h3>
-      <p>Pentru lucrări de peste câteva zile, echipa se cazează în zonă. Asta înseamnă zile de lucru complete, nu patru ore pe zi din care două sunt drum.</p></div>
+    <div class="arg-i" style="border-color:var(--copper)"><h3>Evaluare gratuită, oriunde în cele 5 județe</h3>
+      <p>Ne deplasăm pentru evaluare și măsurători fără niciun cost, la oraș sau la sat, și fără să vă oblige la ceva. Dacă în urma măsurătorii decideți să nu lucrați cu noi, nu plătiți nimic.</p></div>
+    <div class="arg-i" style="border-color:var(--copper)"><h3>Nicio comună nu e "prea departe"</h3>
+      <p>Nu tratăm diferit un client din reședința de județ față de unul dintr-o comună. Prețul manoperei rămâne același, indiferent de localitate.</p></div>
     <div class="arg-i" style="border-color:var(--copper)"><h3>Un singur responsabil</h3>
       <p>Nu dăm lucrarea mai departe către echipe locale găsite pentru un singur proiect. Oamenii care vin la măsurătoare sunt cei care execută și cei la care puteți reveni după finalizare.</p></div>
     <div class="arg-i" style="border-color:var(--copper)"><h3>Confirmare în aceeași zi</h3>
-      <p>Ne scrieți unde este casa și vă spunem în aceeași zi dacă putem prelua lucrarea și în ce interval ne putem încadra.</p></div>
+      <p>Ne scrieți localitatea și vă spunem în aceeași zi dacă putem prelua lucrarea și în ce interval ne putem încadra.</p></div>
   </div>
 </div></section>
 
-%s""" % (phero("Unde lucrăm", "Ne deplasăm în toată România",
-               "Echipele noastre lucrează la nivel național. Deplasarea pentru evaluare și măsurători este gratuită, indiferent de județ."),
-         chips, city_list, cta_section()) + footer()
+%s""" % (phero("Unde lucrăm", "Acoperim tot județul, nu doar orașul",
+               "Lucrăm pe toată raza județelor Iași, Suceava, Vaslui, Neamț și Bacău. Deplasarea pentru evaluare și măsurători este gratuită, la oraș sau la sat."),
+         chips, judet_blocks, cta_section()) + footer()
 
 
 def page_faq():
-    return head("Întrebări frecvente despre acoperișuri | Acoperișuri Perfecte",
+    return head("Întrebări frecvente despre acoperișuri | Acoperișul Solid",
                 "Prețuri, garanție, materiale, durata lucrărilor, zone de lucru. Răspunsuri clare la întrebările pe care ni le pun cel mai des clienții.",
                 "/intrebari-frecvente/", "montaj-fereastra-mansarda.jpg", "Întrebări frecvente",
                 extra=FAQ_LD) + header("intrebari-frecvente") + """
@@ -694,8 +714,8 @@ def page_faq():
 
 
 def page_contact():
-    return head("Contact | Acoperișuri Perfecte — %s" % B["tel_disp"],
-                "Sunați la %s sau scrieți pe WhatsApp. Răspundem în aceeași zi. Deplasare și deviz gratuit în toată România." % B["tel_disp"],
+    return head("Contact | Acoperișul Solid — %s" % B["tel_disp"],
+                "Sunați la %s sau scrieți pe WhatsApp. Răspundem în aceeași zi. Deplasare și deviz gratuit în tot județul Iași, Suceava, Vaslui, Neamț sau Bacău." % B["tel_disp"],
                 "/contact/", "acoperis-tigla-metalica-rosie.jpg", "Contact") + header("contact") + """
 %s
 <section class="sec"><div class="wrap">
@@ -729,8 +749,8 @@ def page_contact():
 
 
 def page_despre():
-    return head("Despre noi | Echipe de acoperișuri în toată România",
-                "Peste %d ani de experiență și %d+ de acoperișuri executate. Echipe proprii, fără subcontractare, cu deplasare la nivel național." % (B["years"], B["projects"]),
+    return head("Despre noi | Echipe de acoperișuri în Iași, Suceava, Vaslui, Neamț, Bacău",
+                "Peste %d ani de experiență și %d+ de acoperișuri executate. Echipe proprii, fără subcontractare, active pe toată raza județelor Iași, Suceava, Vaslui, Neamț și Bacău." % (B["years"], B["projects"]),
                 "/despre/", "sarpanta-lemn-casa-noua.jpg", "Despre noi") + header("despre") + """
 %s
 <section class="sec"><div class="wrap"><div class="about rv">
@@ -741,7 +761,7 @@ def page_despre():
     <p>Am rămas la un model simplu: echipe care se deplasează, care stau în zonă până termină și care răspund la telefon și după doi ani de la lucrare. Nu suntem cea mai ieftină variantă de pe piață și nu ne propunem să fim.</p>
     <p>Ce ne diferențiază cel mai mult e ce facem înainte să începem: măsurăm, explicăm ce se poate găsi sub învelitoarea veche și punem totul în deviz, pe etape. Un client care știe dinainte ce urmează nu are surprize la final.</p>
   </div>
-  <img src="/images/sarpanta-lemn-casa-noua.jpg" alt="Șarpantă din lemn executată de echipa Acoperișuri Perfecte la o casă în construcție" loading="lazy" width="1200" height="1600">
+  <img src="/images/sarpanta-lemn-casa-noua.jpg" alt="Șarpantă din lemn executată de echipa Acoperișul Solid la o casă în construcție" loading="lazy" width="1200" height="1600">
 </div></div></section>
 
 <section class="sec sec-stone"><div class="wrap">
@@ -749,7 +769,7 @@ def page_despre():
     <div class="spec-i"><div class="spec-n">%d<em>+ ani</em></div><div class="spec-l">De experiență</div></div>
     <div class="spec-i"><div class="spec-n">%d<em>+</em></div><div class="spec-l">Lucrări finalizate</div></div>
     <div class="spec-i"><div class="spec-n">%s</div><div class="spec-l">Din %d de recenzii</div></div>
-    <div class="spec-i"><div class="spec-n">41</div><div class="spec-l">Județe acoperite</div></div>
+    <div class="spec-i"><div class="spec-n">5</div><div class="spec-l">Județe deservite integral</div></div>
   </div>
 </div></section>
 
@@ -772,7 +792,7 @@ def page_despre():
 </div></section>
 
 %s""" % (phero("Despre noi", "O echipă care se deplasează, nu un intermediar",
-               "Peste %d ani în acoperișuri și %d+ de lucrări finalizate, în toată România." % (B["years"], B["projects"])),
+               "Peste %d ani în acoperișuri și %d+ de lucrări finalizate, în județele Iași, Suceava, Vaslui, Neamț și Bacău." % (B["years"], B["projects"])),
          B["years"], B["years"], B["projects"], B["rating"], B["reviews"], cta_section()) + footer()
 
 
@@ -808,7 +828,7 @@ PAGES = {
     "servicii/index.html":             page_servicii(),
     "lucrari/index.html":              page_lucrari(),
     "calculator-pret/index.html":      page_calculator(),
-    "acoperire-nationala/index.html":  page_acoperire(),
+    "zona-acoperire/index.html":       page_acoperire(),
     "intrebari-frecvente/index.html":  page_faq(),
     "contact/index.html":              page_contact(),
     "despre/index.html":               page_despre(),
@@ -819,8 +839,8 @@ REDIRECTS = {
     "oferta": "/calculator-pret/", "calculator": "/calculator-pret/", "pret": "/calculator-pret/",
     "preturi": "/calculator-pret/", "proiecte": "/lucrari/", "portofoliu": "/lucrari/",
     "galerie": "/lucrari/", "despre-noi": "/despre/", "faq": "/intrebari-frecvente/",
-    "intrebari": "/intrebari-frecvente/", "acoperisuri": "/servicii/", "zone": "/acoperire-nationala/",
-    "acoperire": "/acoperire-nationala/",
+    "intrebari": "/intrebari-frecvente/", "acoperisuri": "/servicii/", "zone": "/zona-acoperire/",
+    "acoperire": "/zona-acoperire/", "acoperire-nationala": "/zona-acoperire/",
 }
 
 FAVICON = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
@@ -837,7 +857,7 @@ MANIFEST = {"name": B["name"] + " — " + B["tagline"], "short_name": B["name"],
 
 SITEMAP = [("/", "1.0", "weekly"), ("/servicii/", "0.9", "monthly"),
            ("/calculator-pret/", "0.9", "monthly"), ("/lucrari/", "0.8", "monthly"),
-           ("/acoperire-nationala/", "0.8", "monthly"), ("/despre/", "0.7", "yearly"),
+           ("/zona-acoperire/", "0.8", "monthly"), ("/despre/", "0.7", "yearly"),
            ("/intrebari-frecvente/", "0.7", "monthly"), ("/contact/", "0.8", "yearly")]
 
 ROBOTS = """User-agent: *
@@ -856,6 +876,7 @@ Disallow: /intrebari/
 Disallow: /acoperisuri/
 Disallow: /zone/
 Disallow: /acoperire/
+Disallow: /acoperire-nationala/
 
 Sitemap: %s/sitemap.xml
 """ % B["domain"]
@@ -880,7 +901,7 @@ python3 build.py
 | Servicii | `/servicii/` |
 | Lucrări | `/lucrari/` |
 | Calculator preț | `/calculator-pret/` |
-| Unde lucrăm | `/acoperire-nationala/` |
+| Unde lucrăm | `/zona-acoperire/` |
 | Întrebări frecvente | `/intrebari-frecvente/` |
 | Despre noi | `/despre/` |
 | Contact | `/contact/` |

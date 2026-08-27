@@ -14,5 +14,6 @@ Disallow: /intrebari/
 Disallow: /acoperisuri/
 Disallow: /zone/
 Disallow: /acoperire/
+Disallow: /acoperire-nationala/
 
 Sitemap: https://acoperisulsolid.ro/sitemap.xml

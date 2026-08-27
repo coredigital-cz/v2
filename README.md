@@ -1,4 +1,4 @@
-# Acoperișuri Perfecte — acoperisulsolid.ro
+# Acoperișul Solid — acoperisulsolid.ro
 
 Site static generat cu `build.py`. GitHub Pages, fără build tools.
 
@@ -18,7 +18,7 @@ python3 build.py
 | Servicii | `/servicii/` |
 | Lucrări | `/lucrari/` |
 | Calculator preț | `/calculator-pret/` |
-| Unde lucrăm | `/acoperire-nationala/` |
+| Unde lucrăm | `/zona-acoperire/` |
 | Întrebări frecvente | `/intrebari-frecvente/` |
 | Despre noi | `/despre/` |
 | Contact | `/contact/` |

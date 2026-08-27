@@ -1,4 +1,4 @@
-/* acoperisulsolid.ro — Acoperișuri Perfecte */
+/* acoperisulsolid.ro — Acoperișul Solid */
 (function () {
   'use strict';
 
