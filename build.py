@@ -31,6 +31,11 @@ WA_TXT = "Bun%C4%83%20ziua%21%20A%C8%99%20dori%20o%20ofert%C4%83%20pentru%20lucr
 WA_LINK = "https://wa.me/%s?text=%s" % (B["wa"], WA_TXT)
 TEL = "tel:" + B["tel_raw"]
 
+WEB3FORMS_KEY = "3bb80e3f-b3a1-49d3-bf60-6480faf41f2c"
+
+# mărci de materiale cu care se lucrează, afișate ca "parteneri" pe homepage
+BRANDS = ["Bilka", "Lindab", "Velux"]  # TODO: al 4-lea brand — de confirmat cu clientul
+
 REGIONS = ["Iași", "Suceava", "Vaslui", "Neamț", "Bacău"]
 
 # localitati reale pe judet, pentru a arata acoperire pe toata raza judetului, nu doar resedinta
@@ -124,7 +129,7 @@ FAQ = [
      ["Acoperim integral județele Iași, Suceava, Vaslui, Neamț și Bacău — nu doar reședințele de județ, ci toate orașele, comunele și satele din raza lor.",
       "Ne spuneți unde este casa și vă confirmăm în aceeași zi dacă putem prelua lucrarea și în ce interval."]),
     ("Cât costă un acoperiș?",
-     ["Depinde de suprafața reală, de pantă, de învelitoarea aleasă și de starea șarpantei. Aveți pe site un calculator care vă dă un interval orientativ în mai puțin de un minut.",
+     ["Depinde de suprafața reală, de pantă, de învelitoarea aleasă și de starea șarpantei. Pe pagina de calculator preț ne puteți trimite aceste detalii pe email și vă răspundem cu un interval orientativ.",
       "Prețul exact vine după măsurătoare. O ofertă dată doar pe telefon, fără măsurători, iese aproape întotdeauna prea mică și crește pe parcurs."]),
     ("De ce suprafața acoperișului e mai mare decât a casei?",
      ["Pentru că un acoperiș este o suprafață înclinată, plus streașina care depășește pereții cu 40–80 cm de jur împrejur.",
@@ -157,18 +162,6 @@ LOGO = ('<svg viewBox="0 0 36 36" aria-hidden="true">'
         'stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" fill="none"/>'
         '<path d="M10 26.5c1.6 0 1.6 2 3.2 2s1.6-2 3.2-2 1.6 2 3.2 2 1.6-2 3.2-2 1.6 2 3.2 2" '
         'stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" fill="none" opacity=".55"/></svg>')
-
-WA_SVG = ('<svg viewBox="0 0 448 512" aria-hidden="true"><path d="M380.9 97.1C339 55.1 283.2 32 '
- '223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 '
- '106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7'
- 'l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 '
- '95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8'
- '-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3'
- '-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8'
- '-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 '
- '53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 '
- '4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>')
-
 
 def biz_ld():
     return {
@@ -280,7 +273,7 @@ def header(active=""):
                 TEL, B["tel_disp"], mnav, TEL, B["tel_disp"], WA_LINK)
 
 
-def form(sid, title, sub, compact=False, calc=False):
+def form(sid, title, sub, compact=False):
     extra = ""
     if not compact:
         opts = "".join("<option>%s</option>" % s["t"] for s in SERVICES)
@@ -289,24 +282,31 @@ def form(sid, title, sub, compact=False, calc=False):
         <select id="lu%s" name="lucrare"><option value="">Alegeți din listă</option>%s<option>Altă lucrare</option></select></div>
       <div class="field"><label for="de%s">Detalii (opțional)</label>
         <textarea id="de%s" name="detalii" placeholder="Suprafață aproximativă, tip de învelitoare, ce problemă aveți."></textarea></div>""" % (sid, sid, opts, sid, sid)
-    attr = ' data-calc' if calc else ''
     return """<div class="cta-f">
   <h3>%s</h3><p>%s</p>
-  <form data-wa%s novalidate>
+  <form class="ef" data-ef action="https://api.web3forms.com/submit" method="POST" novalidate>
+    <input type="hidden" name="access_key" value="%s">
+    <input type="hidden" name="subject" value="Cerere ofertă de pe acoperisulsolid.ro">
+    <input type="hidden" name="from_name" value="Formular acoperisulsolid.ro">
+    <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off">
     <div class="field-2">
       <div class="field"><label for="nu%s">Nume *</label>
         <input id="nu%s" name="nume" type="text" autocomplete="name" required></div>
       <div class="field"><label for="te%s">Telefon *</label>
         <input id="te%s" name="telefon" type="tel" autocomplete="tel" required></div>
     </div>
-    <div class="field"><label for="or%s">Localitate</label>
-      <input id="or%s" name="oras" type="text" autocomplete="address-level2"></div>
+    <div class="field-2">
+      <div class="field"><label for="em%s">Email *</label>
+        <input id="em%s" name="email" type="email" autocomplete="email" required></div>
+      <div class="field"><label for="or%s">Localitate</label>
+        <input id="or%s" name="oras" type="text" autocomplete="address-level2"></div>
+    </div>
     %s
     <p class="f-msg" role="alert"></p>
-    <button class="btn btn-wa btn-w" type="submit">Trimiteți pe WhatsApp</button>
-    <p class="f-hint">Se deschide WhatsApp cu mesajul completat, către <b>%s</b>. Preferați telefonul? <a href="%s">Sunați acum</a>.</p>
+    <button class="btn btn-p btn-w" type="submit">Trimiteți solicitarea</button>
+    <p class="f-hint">Vă răspundem pe email, de obicei în aceeași zi. Preferați telefonul? <a href="%s">Sunați acum</a>.</p>
   </form>
-</div>""" % (title, sub, attr, sid, sid, sid, sid, sid, sid, extra, B["tel_disp"], TEL)
+</div>""" % (title, sub, WEB3FORMS_KEY, sid, sid, sid, sid, sid, sid, sid, sid, extra, TEL)
 
 
 def footer():
@@ -348,13 +348,12 @@ def footer():
   <a class="m-call" href="%s">Sunați acum</a>
   <a class="m-wa" href="%s" target="_blank" rel="noopener">WhatsApp</a>
 </div>
-<a class="wa-f" href="%s" target="_blank" rel="noopener" aria-label="Scrieți-ne pe WhatsApp">%s</a>
 
 <script src="/assets/script.js?v=%s" defer></script>
 </body>
 </html>""" % (LOGO, B["name"], B["tagline"], B["years"], B["projects"], TEL, B["tel_disp"], svc,
               TEL, B["tel_disp"], WA_LINK, B["name"], B["rating"], B["reviews"],
-              TEL, WA_LINK, WA_LINK, WA_SVG, JS_V)
+              TEL, WA_LINK, JS_V)
 
 
 def phero(crumb, h1, lead):
@@ -390,6 +389,14 @@ def faq_block(items):
 FAQ_LD = {"@context": "https://schema.org", "@type": "FAQPage",
           "mainEntity": [{"@type": "Question", "name": q,
                           "acceptedAnswer": {"@type": "Answer", "text": " ".join(a)}} for q, a in FAQ]}
+
+
+def partners_section():
+    chips = "".join('<span class="brand-i">%s</span>' % b for b in BRANDS)
+    return """<section class="sec" style="padding:40px 0 44px"><div class="wrap">
+  <p class="kicker" style="justify-content:center;margin-bottom:24px">Lucrăm cu materiale de la</p>
+  <div class="brands">%s</div>
+</div></section>""" % chips
 
 
 def cta_section():
@@ -470,6 +477,8 @@ def page_home():
 </div></div></div>
 </section>
 
+%s
+
 <section class="sec"><div class="wrap">
   <div class="sec-h rv"><span class="kicker">Servicii</span>
     <h2>Tot ce ține de acoperișul dumneavoastră</h2>
@@ -530,7 +539,7 @@ def page_home():
 </div></section>
 
 %s""" % (WA_LINK, TEL, B["tel_disp"], stars(), B["rating"], B["reviews"],
-         B["years"], B["projects"], svc, len(SERVICES), proc, why_h, work,
+         B["years"], B["projects"], partners_section(), svc, len(SERVICES), proc, why_h, work,
          stars(), B["rating"], B["reviews"], revs, chips, B["tel_disp"],
          faq_block(FAQ[:5]), cta_section()) + footer()
 
@@ -588,54 +597,10 @@ def page_lucrari():
 
 
 def page_calculator():
-    return head("Calculator preț acoperiș | Estimare gratuită în 1 minut",
-                "Calculați suprafața reală a acoperișului și un interval orientativ de preț pentru manoperă, materiale și șarpantă. Estimare gratuită, fără date personale.",
+    return head("Calculator preț acoperiș | Cerere de ofertă gratuită",
+                "Aflați intervalul orientativ de preț pentru manoperă, materiale și șarpantă. Trimiteți detaliile pe email și primiți un răspuns în aceeași zi.",
                 "/calculator-pret/", "acoperis-casa-noua-antracit.jpg", "Calculator preț") + header("calculator-pret") + """
 %s
-<section class="sec"><div class="wrap"><div class="calc" id="calc">
-  <div class="calc-f">
-    <div class="field">
-      <div class="range-row"><label for="c-amprenta" style="margin:0">Amprenta casei la sol</label><b id="c-amprenta-v">110 mp</b></div>
-      <input id="c-amprenta" type="range" min="40" max="400" step="5" value="110">
-      <p class="f-hint">Lungimea înmulțită cu lățimea casei, la nivelul solului. Nu suprafața acoperișului.</p>
-    </div>
-    <div class="field"><label>Panta acoperișului</label>
-      <div class="seg" data-key="panta">
-        <button type="button" data-v="mica">Mică</button>
-        <button type="button" data-v="medie" class="on">Medie</button>
-        <button type="button" data-v="mare">Mare</button></div>
-      <p class="f-hint">Mică: aproape plat. Medie: casă obișnuită. Mare: pod înalt sau mansardă.</p>
-    </div>
-    <div class="field"><label>Învelitoarea dorită</label>
-      <div class="seg" data-key="material">
-        <button type="button" data-v="metalica" class="on">Țiglă metalică</button>
-        <button type="button" data-v="ceramica">Țiglă ceramică</button>
-        <button type="button" data-v="faltuita">Tablă fălțuită</button></div>
-    </div>
-    <div class="field"><label>Aveți nevoie de șarpantă nouă?</label>
-      <div class="seg seg-2" data-key="sarpanta">
-        <button type="button" data-v="nu" class="on">Nu, o am</button>
-        <button type="button" data-v="da">Da, de la zero</button></div>
-      <p class="f-hint">Alegeți „da" dacă e casă nouă la roșu sau dacă structura veche trebuie refăcută complet.</p>
-    </div>
-  </div>
-
-  <div class="calc-out">
-    <h3>Estimare orientativă</h3>
-    <p class="calc-note">Pentru datele introduse, o lucrare de acest tip se încadrează în general în:</p>
-    <div class="calc-res" id="c-tot">—</div>
-    <div class="calc-brk">
-      <div><span>Suprafață acoperiș</span><b id="c-mp">—</b></div>
-      <div><span>Manoperă</span><b id="c-man">—</b></div>
-      <div><span>Materiale</span><b id="c-mat">—</b></div>
-      <div><span>Șarpantă</span><b id="c-sar">—</b></div>
-    </div>
-    <p class="calc-note">Intervalul include TVA și nu acoperă situații speciale: lucarne multiple, acces dificil, structură putredă descoperită la demontare. Prețul exact vine după măsurătoare.</p>
-    <div style="margin-top:20px"><a class="btn btn-wa btn-w" id="c-wa" href="%s" target="_blank" rel="noopener">Trimiteți estimarea pe WhatsApp</a></div>
-    <p class="calc-note" style="margin-top:12px;text-align:center">Sau sunați: <a href="%s" style="color:#fff;border-bottom:2px solid var(--copper)">%s</a></p>
-  </div>
-</div></div></section>
-
 <section class="sec sec-stone"><div class="wrap">
   <div class="sec-h rv"><span class="kicker">De citit</span><h2>De ce nu se poate da un preț la telefon</h2></div>
   <div class="arg rv">
@@ -652,16 +617,15 @@ def page_calculator():
 
 <section class="sec"><div class="wrap"><div class="cta">
   <div>
-    <span class="kicker">Preț exact</span>
-    <h2>Trimiteți estimarea și primiți oferta reală</h2>
-    <p style="font-size:1.02rem;margin-top:14px">Completați numele și telefonul, iar estimarea de mai sus pleacă odată cu datele dumneavoastră pe WhatsApp. Vă sunăm și stabilim o măsurătoare.</p>
+    <span class="kicker">Preț orientativ</span>
+    <h2>Trimiteți detaliile și primiți un interval de preț</h2>
+    <p style="font-size:1.02rem;margin-top:14px">Spuneți-ne aproximativ câți metri pătrați are casa la sol, ce învelitoare v-ați dori și dacă aveți nevoie de șarpantă nouă. Vă răspundem pe email cu un interval orientativ; prețul final vine după măsurătoare, care este gratuită.</p>
   </div>
   %s
 </div></div></section>
 """ % (phero("Calculator preț", "Cât costă acoperișul dumneavoastră",
-             "Estimați în mai puțin de un minut suprafața reală și intervalul de preț. Este o orientare, nu o ofertă — prețul final îl stabilim după măsurătoare."),
-       WA_LINK, TEL, B["tel_disp"],
-       form("k", "Trimiteți estimarea", "Estimarea se atașează automat la mesaj.", compact=True, calc=True)) + footer()
+             "Prețul depinde de suprafața reală, panta acoperișului, învelitoarea aleasă și starea structurii — nu poate fi dat corect fără o vizită. Trimiteți-ne detaliile și vă răspundem cu un interval orientativ pe email."),
+       form("k", "Cereți o estimare", "Completați formularul și vă răspundem pe email cu un interval de preț.")) + footer()
 
 
 def page_acoperire():
@@ -745,7 +709,7 @@ def page_contact():
 """ % (phero("Contact", "Hai să vorbim despre acoperișul dumneavoastră",
              "Cel mai rapid este pe WhatsApp sau la telefon. Ne spuneți ce aveți de făcut, stabilim o vizită și primiți un deviz cu preț final."),
        TEL, B["tel_disp"], WA_LINK, WA_LINK, TEL,
-       form("m", "Scrieți-ne", "Completați și continuăm discuția pe WhatsApp.")) + footer()
+       form("m", "Scrieți-ne", "Completați formularul și vă răspundem pe email.")) + footer()
 
 
 def page_despre():
@@ -910,9 +874,11 @@ Plus 13 redirecturi (meta refresh + JS), excluse din sitemap și blocate în rob
 
 ## Contact
 
-Nu există backend și **nu există adresă de e-mail pe site**. Toate formularele și
-calculatorul compun un mesaj și îl deschid în WhatsApp către %s
-(`assets/script.js`, constanta `WA`).
+Nu există backend propriu. Formularele de pe site trimit datele prin
+[Web3Forms](https://web3forms.com/) (`action="https://api.web3forms.com/submit"`,
+cheia din `WEB3FORMS_KEY`) către adresa de e-mail configurată pentru acea cheie.
+Linkurile directe de telefon și WhatsApp (header, bara mobilă) rămân construite
+static, în `build.py`, prin `TEL` și `WA_LINK`.
 
 ## SEO
 
@@ -928,7 +894,7 @@ calculatorul compun un mesaj și îl deschid în WhatsApp către %s
 - Paletă: verde pin `#12261E`, aramă `#C4562A`, piatră `#F1F3F0`
 - Typography: Fraunces (titluri), Figtree (text), Space Grotesk (cifre)
 - Motiv recurent: profilul ondulat al țiglei metalice (kickere, separatoare, logo)
-""" % (B["name"], B["tel_disp"])
+""" % B["name"]
 
 
 def write(rel, content):

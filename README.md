@@ -27,9 +27,11 @@ Plus 13 redirecturi (meta refresh + JS), excluse din sitemap și blocate în rob
 
 ## Contact
 
-Nu există backend și **nu există adresă de e-mail pe site**. Toate formularele și
-calculatorul compun un mesaj și îl deschid în WhatsApp către 0756 419 558
-(`assets/script.js`, constanta `WA`).
+Nu există backend propriu. Formularele de pe site trimit datele prin
+[Web3Forms](https://web3forms.com/) (`action="https://api.web3forms.com/submit"`,
+cheia din `WEB3FORMS_KEY`) către adresa de e-mail configurată pentru acea cheie.
+Linkurile directe de telefon și WhatsApp (header, bara mobilă) rămân construite
+static, în `build.py`, prin `TEL` și `WA_LINK`.
 
 ## SEO
 
