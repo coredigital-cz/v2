@@ -98,17 +98,17 @@ SERVICES = [
 
 WORKS = [
     ("acoperis-tigla-metalica-antracit.jpg", "Înlocuire", "Învelitoare nouă din țiglă metalică antracit", "Casă individuală"),
-    ("acoperis-tigla-metalica-rosie.jpg",    "Montaj",    "Țiglă metalică roșie cu sistem pluvial asortat", "Casă la curte"),
+    ("acoperis-tigla-metalica-rosie.jpg",    "Montaj",    "Structură și folie pregătite, cu fereastră de mansardă integrată", "Casă la curte"),
     ("montaj-fereastra-mansarda.jpg",        "Mansardare","Fereastră de mansardă montată cu șorțuri complete", "Mansardă locuibilă"),
     ("sarpanta-lemn-casa-noua.jpg",          "Dulgherie", "Șarpantă nouă executată la casă în construcție", "Construcție nouă"),
     ("acoperis-casa-noua-antracit.jpg",      "Acoperiș nou","Acoperiș închis complet la casă cu mansardă", "Construcție nouă"),
     ("acoperis-finalizat-casa-parter.jpg",   "Finalizat", "Acoperiș pe casă parter, cu streașină lambrisată", "Locuință parter"),
     ("acoperis-antracit-vedere-aeriana.jpg", "Finalizat", "Acoperiș din țiglă metalică antracit, vedere de ansamblu", "jud. Suceava"),
-    ("acoperis-visiniu-tigla-metalica.jpg",  "Finalizat", "Țiglă metalică vișinie, cu racord la coș de cărămidă", "jud. Iași"),
+    ("acoperis-visiniu-tigla-metalica.jpg",  "Finalizat", "Țiglă metalică antracit, cu racord la coș de cărămidă", "jud. Iași"),
     ("acoperis-antracit-cos-fum.jpg",        "Finalizat", "Acoperiș antracit lângă case tradiționale din zonă", "jud. Neamț"),
     ("montaj-tigla-antracit-lucru.jpg",      "În lucru",  "Montaj țiglă metalică antracit, casă în construcție alăturată", "jud. Iași"),
     ("acoperis-visiniu-echipa-montaj.jpg",   "În lucru",  "Echipa la montajul unui acoperiș vișiniu, printre copaci", "jud. Vaslui"),
-    ("acoperis-visiniu-patru-ape.jpg",       "Finalizat", "Acoperiș în patru ape, țiglă metalică vișinie", "jud. Bacău"),
+    ("acoperis-visiniu-patru-ape.jpg",       "În lucru",  "Acoperiș în patru ape, structură pregătită pentru țiglă", "jud. Bacău"),
     ("acoperis-gri-panorama-sat.jpg",        "Finalizat", "Acoperiș gri, vedere panoramică spre sat", "jud. Suceava"),
     ("detaliu-montaj-insurubare.jpg",        "Detaliu",   "Fixarea țiglei metalice, prindere pe toată suprafața", "Detaliu montaj"),
     ("sarpanta-casa-montaj.jpg",             "Structură", "Șarpantă nouă ridicată pe o casă în construcție", "jud. Neamț"),
@@ -116,8 +116,8 @@ WORKS = [
 ]
 
 REVIEWS = [
-    ("Constantin B.", "jud. Iași",     "acoperis-casa-noua-antracit.jpg",       "Au venit când au spus și au închis acoperișul în cinci zile. Prețul din ofertă a fost prețul final, fără discuții pe parcurs."),
-    ("Elena R.",      "jud. Suceava",  "acoperis-tigla-metalica-antracit.jpg",  "Aveam tablă veche care ruginise. Au pus țiglă metalică și au refăcut și jgheaburile. Curtea a rămas curată după ei."),
+    ("Constantin B.", "jud. Iași",     "echipa-1.mp4",                          "Au venit când au spus și au închis acoperișul în cinci zile. Prețul din ofertă a fost prețul final, fără discuții pe parcurs."),
+    ("Elena R.",      "jud. Suceava",  "echipa-2.mp4",                          "Aveam tablă veche care ruginise. Au pus țiglă metalică și au refăcut și jgheaburile. Curtea a rămas curată după ei."),
     ("Marius D.",     "jud. Vaslui",   "acoperis-finalizat-casa-parter.jpg",    "De doi ani aveam o pată pe tavan și nimeni nu găsea cauza. Au urcat, au urmărit apa și au reparat șorțul de la coș."),
     ("Ioana P.",      "jud. Neamț",    "montaj-fereastra-mansarda.jpg",         "Mansarda nu mai are condens iarna. Ne-au explicat exact de ce trebuia bariera de vapori pusă altfel decât era."),
     ("Vasile M.",     "jud. Bacău",    "acoperis-tigla-metalica-rosie.jpg",     "Furtuna îmi luase câteva plăci. Au venit în două zile și au rezolvat, fără să-mi ceară să schimb tot acoperișul."),
@@ -368,11 +368,17 @@ def stars():
 
 
 def rev_card(name, judet, photo, text):
+    if photo.endswith(".mp4"):
+        media = ('<div class="rev-ph rev-ph-v"><video src="/videos/%s" poster="/images/acoperis-tigla-metalica-antracit.jpg" '
+                 'controls playsinline preload="metadata" '
+                 'aria-label="Echipa la lucru"></video></div>') % photo
+    else:
+        media = '<div class="rev-ph"><img src="/images/%s" alt="Lucrare la un client din %s" loading="lazy" width="400" height="260"></div>' % (photo, judet)
     return """<article class="rev-c">
-  <div class="rev-ph"><img src="/images/%s" alt="Lucrare la un client din %s" loading="lazy" width="400" height="260"></div>
+  %s
   %s<p>%s</p>
   <div class="rev-who"><span class="rev-av" aria-hidden="true">%s</span>
-    <span><b>%s</b><span>%s</span></span></div></article>""" % (photo, judet, stars(), text, name[0], name, judet)
+    <span><b>%s</b><span>%s</span></span></div></article>""" % (media, stars(), text, name[0], name, judet)
 
 
 def faq_block(items):

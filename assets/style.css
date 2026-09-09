@@ -281,6 +281,8 @@ p strong,li strong{color:var(--pine);font-weight:600}
 .rev-c{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column}
 .rev-ph{aspect-ratio:16/9;overflow:hidden;background:var(--stone-2)}
 .rev-ph img{width:100%;height:100%;object-fit:cover}
+.rev-ph-v{aspect-ratio:9/16;max-height:420px}
+.rev-ph-v video{width:100%;height:100%;object-fit:cover;display:block;background:#000}
 .rev-c>.stars,.rev-c>p,.rev-c>.rev-who{margin-left:22px;margin-right:22px}
 .rev-c>.stars{margin-top:20px;margin-bottom:12px}
 .rev-c>.rev-who{margin-bottom:22px}
